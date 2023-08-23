@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+        <title>Controller</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #eeeeee;
+                font-family: Arial, sans-serif;
+            }
+
+            .controller {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 600px;
+                padding: 20px;
+                background-color: #ffffff;
+                margin: 0 auto
+            }
+
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .drive-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .steering-buttons {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-direction: row;
+            }
+
+            .button {
+                background-color: #dddddd;
+                font-size: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.05s;
+                margin: 3px;
+                outline: none;
+                /*safari-chrome version*/
+                -webkit-user-select: none;
+                /*backup for other browsers version*/
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            .button:active {
+                background-color: #bbbbbb;
+            }
+
+            .forwards {
+                width: 150px;
+                height: 70px;
+            }
+            .backwards {
+                width: 150px;
+                height: 70px;
+            }
+
+            .left {
+                width: 70px;
+                height: 150px;
+            }
+            .right {
+                width: 70px;
+                height: 150px;
+            }
+
+            .connection-status {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                margin: 0 auto;
+                background-color: #cc0000;
+                align-self: center;
+            }
+
+            .connection-status.connected {
+                background-color: #00cc00;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class = "controller">
+            <div class = "button-group drive-buttons">
+                <button class = "forwards button" data-direction = "FORWARDS">↑</button>
+                <button class = "backwards button" data-direction = "BACKWARDS">↓</button>
+            </div>
+
+            <div class="connection-status"></div>
+            
+            <div class = "button-group steering-buttons">
+                <button class = "left button" data-direction = "LEFT">←</button>
+                <button class = "right button" data-direction = "RIGHT">→</button>
+            </div>
+        </div>
+
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+        <script>
+            class ControllerClient {
+                constructor() {
+                    this.socket = io.connect("http://raspberrypi.local:10000");
+                    //this.socket = io.connect("http://localhost:10000");
+                    this.socket.on("connect", () => {
+                        console.log("Connected to server");
+                        this.updateConnectionStatus(true);
+                        this.startControlling();
+                    });
+                    this.socket.on("disconnect", () => {
+                        console.log("Disconnected from server");
+                        this.updateConnectionStatus(false);
+                    });
+                }
+
+                startControlling() {
+                    console.log("Now controlling");
+                    const buttons = document.querySelectorAll(".button");
+
+                    buttons.forEach(button => {
+                        const sendDirection = (action) => {
+                            const message = `${action}_${button.dataset.direction}`;
+                            console.log("Sending:", message);
+                            this.socket.emit("message", message);
+                        };
+
+                        // pc
+                        button.addEventListener("mousedown", () => {
+                            sendDirection("START");
+                        });
+                        button.addEventListener("mouseup", () => {
+                            sendDirection("STOP");
+                        });
+                        button.addEventListener("mouseleave", () => {
+                            sendDirection("STOP");
+                        });
+
+                        // mobile
+                        button.addEventListener("touchstart", () => {
+                            sendDirection("START");
+                        });
+                        button.addEventListener("touchend", () => {
+                            sendDirection("STOP");
+                        });
+                        button.addEventListener("touchcancel", () => {
+                            sendDirection("STOP");
+                        });
+                    });
+                }
+
+                updateConnectionStatus(connected) {
+                    const connectionStatus = document.querySelector(".connection-status");
+                    connectionStatus.classList.toggle("connected", connected);
+                }
+            }
+
+            const cc = new ControllerClient();
+        </script>
+    </body>
+</html>

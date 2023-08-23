@@ -1,0 +1,95 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #eeeeee;
+    font-family: Arial, sans-serif;
+}
+
+.controller {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 600px;
+    padding: 20px;
+    background-color: #ffffff;
+    margin: 0 auto
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drive-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.steering-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.button {
+    background-color: #dddddd;
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.05s;
+    margin: 3px;
+    outline: none;
+    /*safari-chrome version*/
+    -webkit-user-select: none;
+    /*backup for other browsers version*/
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.button:active {
+    background-color: #bbbbbb;
+}
+
+.forwards {
+    width: 150px;
+    height: 70px;
+}
+.backwards {
+    width: 150px;
+    height: 70px;
+}
+
+.left {
+    width: 70px;
+    height: 150px;
+}
+.right {
+    width: 70px;
+    height: 150px;
+}
+
+.connection-status {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: #cc0000;
+    align-self: center;
+}
+
+.connection-status.connected {
+    background-color: #00cc00;
+}
+
+
